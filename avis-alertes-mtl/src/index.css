@@ -1,0 +1,380 @@
+•⁠⁠{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: rgb(254, 253, 253);
+}
+
+
+
+
+.abonnement-box {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 25px 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  max-width: 300px;
+  margin-top: 20px;
+}
+
+.abonnement-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.abonnement-text {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.abonnement-link {
+  color: #00704a;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.abonnement-link:hover {
+  color: #004c32;
+}
+
+
+
+
+
+.accueil-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  font-family: "Arial", sans-serif;
+  
+}
+
+
+.header-bloc {
+  background-color: #68baed1a;
+  border-radius: 8px;
+  padding: 35px 35px;
+  margin-bottom: 80px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  text-align: left;
+}
+
+
+
+.header-title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.header-subtitle {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 25px;
+}
+
+/* --- Barre de recherche --- */
+.search-bar {
+  width: 100%;
+  max-width: 600px;
+  padding: 12px 18px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  font-size: 1rem;
+  background-color: #fff;
+  margin-bottom: 20px;
+}
+
+/* --- Filtres --- */
+.filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filters select,
+.filters input[type="date"] {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  background-color: #fff;
+  font-size: 0.95rem;
+}
+
+.reset-btn {
+  background-color: #00704a;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.reset-btn:hover {
+  background-color: #004c32;
+}
+
+/* --- Layout principal --- */
+.content-layout {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 30px;
+}
+
+.alertes-list {
+  flex: 1;
+}
+
+.results-text {
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+
+.abonnement-box {
+  background-color: #7abbf818;
+  border-radius: 8px;
+  padding: 25px 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  max-width: 300px;
+}
+
+.abonnement-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.abonnement-text {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.abonnement-link {
+  color: #00704a;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.abonnement-link:hover {
+  color: #004c32;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .content-layout {
+    flex-direction: column;
+  }
+
+  .abonnement-box {
+    max-width: 100%;
+    margin-top: 20px;
+  }
+
+  .header-title {
+    font-size: 2rem;
+  }
+
+  .search-bar {
+    max-width: 100%;
+  }
+}
+
+
+//* Mes Alertes *//
+
+
+.Carte {
+  border-top: 1px solid #ddd;
+  padding: 15px 0;
+  cursor: pointer;
+  margin-bottom: 6px;
+
+  background-color: #eee;
+  padding: 2px 8px;
+  font-size: 13px;
+
+  margin-top: 8px;
+  font-size: 13px;
+  color: #666;
+}
+
+
+
+
+
+.header-section {
+  background-color: #68baed1a; /* gris très clair */
+  border-radius: 8px;
+  padding: 40px 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.header-content {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.header-title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.header-subtitle {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 25px;
+}
+
+.search-bar {
+  display: flex;
+  justify-content: left;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 600px;
+  padding: 12px 18px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  font-size: 1rem;
+  background-color: #fff;
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: left;
+}
+
+.filter-btn {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  background-color: #eaeaea;
+}
+
+
+
+
+
+
+
+/*  HEADER */
+.header {
+  display: flex;
+  justify-content: space-between; /* logo à gauche, bouton à droite */
+  align-items: center;
+  padding: 15px 30px;
+  background-color: #fff;
+  border-bottom: 1px solid #ddd;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Logo */
+.header img {
+  height: 50px;
+  cursor: pointer;
+}
+
+/* Bouton “Mon Compte” */
+.header button {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #333;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.header button:hover {
+  color: #00704a; /* vert Montréal */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    padding: 10px 20px;
+  }
+
+  .header button {
+    font-size: 0.9rem;
+  }
+}
+
+
+
+/* --- Ligne de séparation --- */
+.separator {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 25px 0;
+}
+
+/* --- Filtres en dehors du carré --- */
+.filters-outside {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 25px;
+}
+
+.filters-outside select,
+.filters-outside input[type="date"] {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  background-color: #fff;
+  font-size: 0.95rem;
+}
+
+.filters-outside .reset-btn {
+  background-color: #00704a;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.filters-outside .reset-btn:hover {
+  background-color: #004c32;
+}
+
+
+
+

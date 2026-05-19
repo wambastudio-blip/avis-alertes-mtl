@@ -1,0 +1,74 @@
+
+
+/*  VERSION MOBILE  */
+@media (max-width: 768px) {
+
+  /* Page */
+  .accueil-page {
+    padding: 20px 15px;
+  }
+
+  /* Bloc Avis et alertes */
+  .header-bloc {
+    padding: 25px 20px;
+    margin-bottom: 40px;
+  }
+
+  .header-title {
+    font-size: 1.8rem;
+  }
+
+  .header-subtitle {
+    font-size: 1rem;
+  }
+
+  /* Barre de recherche */
+  .search-bar {
+    max-width: 100%;
+    padding: 10px 15px;
+    font-size: 0.95rem;
+  }
+
+  /* Filtres en dehors du carré */
+  .filters-outside {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .filters-outside select,
+  .filters-outside input[type="date"] {
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  .filters-outside .reset-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Layout principal */
+  .content-layout {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* Abonnement */
+  .abonnement-box {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  /* Cartes d’alertes */
+  .carte {
+    padding: 12px;
+  }
+
+  /* Header (logo + bouton compte) */
+  .header {
+    padding: 10px 15px;
+  }
+
+  .header button {
+    font-size: 0.9rem;
+  }
+}
