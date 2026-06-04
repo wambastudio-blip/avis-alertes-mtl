@@ -1,124 +1,285 @@
-import { useState, useEffect } from "react";
-import { getAlertes } from "../services/alertes";
-import CarteAlerte from "../components/CarteAlerte";
-import AbonnementAlertes from "../components/AbonnementAlertes";
-import "../index.css";
-import "../indexmbl.css";
+import { useState, useEffect } from 'react'
+import { getAlertes } from '../services/alertes'
+import CarteAlerte from '../components/CarteAlerte'
+import SkeletonCard from '../components/SkeletonCard'
+import AbonnementAlertes from '../components/AbonnementAlertes'
+import FiltreDropdown from '../components/FiltreDropdown'
+
+const PAGE_SIZE = 10
 
 function Accueil() {
-  const [alertes, setAlertes] = useState([]);
-  const [chargement, setChargement] = useState(true);
-  const [recherche, setRecherche] = useState("");
-  const [filtreArrondissement, setFiltreArrondissement] = useState("");
-  const [filtreSujet, setFiltreSujet] = useState("");
-  const [filtreDate, setFiltreDate] = useState("");
+  const [alertes, setAlertes] = useState([])
+  const [chargement, setChargement] = useState(true)
+  const [erreur, setErreur] = useState(null)
+  const [horsLigne, setHorsLigne] = useState(!navigator.onLine)
+  const [fromCache, setFromCache] = useState(false)
 
+  // Filtres
+  const [recherche, setRecherche] = useState('')
+  const [filtreArrondissements, setFiltreArrondissements] = useState([])
+  const [filtreSujets, setFiltreSujets] = useState([])
+  const [filtreDateDebut, setFiltreDateDebut] = useState('')
+  const [filtreDateFin, setFiltreDateFin] = useState('')
+
+  // Pagination
+  const [nbAffiches, setNbAffiches] = useState(PAGE_SIZE)
+
+  // ─── Chargement initial des données ──────────────────────────────────────
   useEffect(() => {
-    getAlertes().then((data) => {
-      setAlertes(data);
-      setChargement(false);
-    });
-  }, []);
+    ;(async () => {
+      try {
+        const { alertes: data, fromCache: fc } = await getAlertes()
+        setAlertes(data)
+        setFromCache(fc)
+      } catch (err) {
+        setErreur('Impossible de contacter le serveur. Vérifiez votre connexion.')
+      } finally {
+        setChargement(false)
+      }
+    })()
+  }, [])
 
-  const arrondissements = [...new Set(alertes.map((a) => a.arrondissement))];
-  const sujets = [...new Set(alertes.map((a) => a.sujet))];
+  // ─── Détection hors-ligne ─────────────────────────────────────────────────
+  useEffect(() => {
+    const onOffline = () => setHorsLigne(true)
+    const onOnline = () => setHorsLigne(false)
+    window.addEventListener('offline', onOffline)
+    window.addEventListener('online', onOnline)
+    return () => {
+      window.removeEventListener('offline', onOffline)
+      window.removeEventListener('online', onOnline)
+    }
+  }, [])
 
-  function sansAccents(str) {
-    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  // ─── Options de filtres disponibles ──────────────────────────────────────
+  const arrondissements = [...new Set(alertes.map(a => a.arrondissement))].sort()
+  const sujets = [...new Set(alertes.map(a => a.sujet))].sort()
+
+  // ─── Normalisation pour la recherche sans accents ─────────────────────────
+  const sansAccents = str =>
+    str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+
+  // ─── Filtrage (OU à l'intérieur d'un filtre, ET entre filtres) ────────────
+  const alertesFiltrees = alertes.filter(a => {
+    if (
+      recherche &&
+      !sansAccents(a.titre).includes(sansAccents(recherche)) &&
+      !sansAccents(a.resume).includes(sansAccents(recherche))
+    )
+      return false
+
+    if (filtreArrondissements.length > 0 && !filtreArrondissements.includes(a.arrondissement))
+      return false
+
+    if (filtreSujets.length > 0 && !filtreSujets.includes(a.sujet))
+      return false
+
+    if (filtreDateDebut && a.dateEmission && a.dateEmission < filtreDateDebut)
+      return false
+
+    if (filtreDateFin && a.dateEmission && a.dateEmission > filtreDateFin)
+      return false
+
+    return true
+  })
+
+  const alertesPage = alertesFiltrees.slice(0, nbAffiches)
+
+  // ─── Réinitialiser tous les filtres ──────────────────────────────────────
+  function reinitialiser() {
+    setRecherche('')
+    setFiltreArrondissements([])
+    setFiltreSujets([])
+    setFiltreDateDebut('')
+    setFiltreDateFin('')
+    setNbAffiches(PAGE_SIZE)
   }
 
-  const alertesFiltrees = alertes.filter((alerte) => {
-    const matchRecherche = sansAccents(alerte.titre.toLowerCase()).includes(
-      sansAccents(recherche.toLowerCase())
-    );
-    const matchArrondissement =
-      filtreArrondissement === "" ||
-      alerte.arrondissement === filtreArrondissement;
-    const matchSujet = filtreSujet === "" || alerte.sujet === filtreSujet;
-    const matchDate = filtreDate === "" || alerte.dateEmission >= filtreDate;
-    return matchRecherche && matchArrondissement && matchSujet && matchDate;
-  });
-
-  function reinitialiserFiltres() {
-    setRecherche("");
-    setFiltreArrondissement("");
-    setFiltreSujet("");
-    setFiltreDate("");
+  // ─── Toggle multi-select ──────────────────────────────────────────────────
+  function toggleArrondissement(val) {
+    setFiltreArrondissements(prev =>
+      prev.includes(val) ? prev.filter(v => v !== val) : [...prev, val]
+    )
+    setNbAffiches(PAGE_SIZE)
   }
 
-  if (chargement) return <p>Chargement...</p>;
+  function toggleSujet(val) {
+    setFiltreSujets(prev =>
+      prev.includes(val) ? prev.filter(v => v !== val) : [...prev, val]
+    )
+    setNbAffiches(PAGE_SIZE)
+  }
 
+  // ─── Construction des chips actifs ────────────────────────────────────────
+  const chipsActifs = [
+    ...filtreArrondissements.map(v => ({
+      label: v,
+      remove: () => setFiltreArrondissements(prev => prev.filter(x => x !== v)),
+    })),
+    ...filtreSujets.map(v => ({
+      label: v,
+      remove: () => setFiltreSujets(prev => prev.filter(x => x !== v)),
+    })),
+    ...(filtreDateDebut
+      ? [{ label: `Depuis ${filtreDateDebut}`, remove: () => setFiltreDateDebut('') }]
+      : []),
+    ...(filtreDateFin
+      ? [{ label: `Jusqu'au ${filtreDateFin}`, remove: () => setFiltreDateFin('') }]
+      : []),
+  ]
+
+  const hasActifs = chipsActifs.length > 0 || recherche !== ''
+
+  // ─── Rendu ────────────────────────────────────────────────────────────────
   return (
     <div className="accueil-page">
 
-      {/* --- BLOC AVIS ET ALERTES --- */}
+      {/* Bannière hors-ligne */}
+      {horsLigne && (
+        <div className="banniere-offline">
+          📴 Vous êtes hors ligne — affichage des données en cache.
+        </div>
+      )}
+
+      {/* Bannière cache */}
+      {!horsLigne && fromCache && (
+        <div className="banniere-cache">
+          ⚠️ Les données affichées proviennent du cache. Rechargez pour actualiser.
+        </div>
+      )}
+
+      {/* ─── En-tête ──────────────────────────────────────────────────── */}
       <section className="header-bloc">
         <h1 className="header-title">Avis et alertes</h1>
         <p className="header-subtitle">Trouver un avis</p>
-
         <input
           type="text"
           placeholder="🔎   Que cherchez-vous?"
           value={recherche}
-          onChange={(e) => setRecherche(e.target.value)}
+          onChange={e => { setRecherche(e.target.value); setNbAffiches(PAGE_SIZE) }}
           className="search-bar"
+          aria-label="Recherche"
         />
       </section>
 
-      {/* --- LIGNE DE SÉPARATION --- */}
       <hr className="separator" />
 
-      {/* --- FILTRES EN DEHORS DU CARRÉ --- */}
+      {/* ─── Filtres ──────────────────────────────────────────────────── */}
       <div className="filters-outside">
-        <select
-          value={filtreArrondissement}
-          onChange={(e) => setFiltreArrondissement(e.target.value)}
-        >
-          <option value="">Arrondissement</option>
-          {arrondissements.map((a) => (
-            <option key={a} value={a}>{a}</option>
-          ))}
-        </select>
 
-        <input
-          type="date"
-          value={filtreDate}
-          onChange={(e) => setFiltreDate(e.target.value)}
+        <FiltreDropdown
+          label="Arrondissement"
+          options={arrondissements}
+          selectionnes={filtreArrondissements}
+          onToggle={toggleArrondissement}
         />
 
-        <select
-          value={filtreSujet}
-          onChange={(e) => setFiltreSujet(e.target.value)}
-        >
-          <option value="">Sujet</option>
-          {sujets.map((s) => (
-            <option key={s} value={s}>{s}</option>
-          ))}
-        </select>
+        <FiltreDropdown
+          label="Sujet"
+          options={sujets}
+          selectionnes={filtreSujets}
+          onToggle={toggleSujet}
+        />
 
-        <button onClick={reinitialiserFiltres} className="reset-btn">
-          Réinitialiser
-        </button>
+        {/* Filtre date */}
+        <label className="date-filter-label">
+          Du
+          <input
+            type="date"
+            value={filtreDateDebut}
+            onChange={e => { setFiltreDateDebut(e.target.value); setNbAffiches(PAGE_SIZE) }}
+          />
+        </label>
+
+        <label className="date-filter-label">
+          Au
+          <input
+            type="date"
+            value={filtreDateFin}
+            onChange={e => { setFiltreDateFin(e.target.value); setNbAffiches(PAGE_SIZE) }}
+          />
+        </label>
+
+        {hasActifs && (
+          <button onClick={reinitialiser} className="reset-btn">
+            Tout effacer
+          </button>
+        )}
       </div>
 
-      {/* --- CONTENU PRINCIPAL --- */}
+      {/* ─── Zone filtres actifs (chips) ──────────────────────────────── */}
+      {chipsActifs.length > 0 && (
+        <div className="chips-zone" role="list" aria-label="Filtres actifs">
+          {chipsActifs.map(chip => (
+            <span key={chip.label} className="chip" role="listitem">
+              {chip.label}
+              <button
+                className="chip-remove"
+                onClick={chip.remove}
+                aria-label={`Retirer le filtre ${chip.label}`}
+              >
+                ×
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* ─── Contenu principal ────────────────────────────────────────── */}
       <div className="content-layout">
         <div className="alertes-list">
-          <p className="results-text">{alertesFiltrees.length} résultat(s)</p>
 
-          {alertesFiltrees.length === 0 ? (
-            <p>Aucun résultat.</p>
-          ) : (
-            alertesFiltrees.map((alerte) => (
-              <CarteAlerte key={alerte.id} alerte={alerte} />
-            ))
+          {/* État : chargement */}
+          {chargement && (
+            <>
+              {[...Array(5)].map((_, i) => <SkeletonCard key={i} />)}
+            </>
+          )}
+
+          {/* État : erreur */}
+          {!chargement && erreur && (
+            <div className="erreur-box">
+              <span className="erreur-icon">⚠️</span>
+              <p>{erreur}</p>
+              <button className="retry-btn" onClick={() => window.location.reload()}>
+                Réessayer
+              </button>
+            </div>
+          )}
+
+          {/* Aucun résultat */}
+          {!chargement && !erreur && alertesFiltrees.length === 0 && (
+            <p className="aucun-resultat">Aucun avis ne correspond à vos critères.</p>
+          )}
+
+          {/* Liste des alertes */}
+          {!chargement && !erreur && alertesFiltrees.length > 0 && (
+            <>
+              <p className="results-text">
+                {alertesFiltrees.length} résultat{alertesFiltrees.length > 1 ? 's' : ''}
+              </p>
+
+              {alertesPage.map(alerte => (
+                <CarteAlerte key={alerte.id} alerte={alerte} />
+              ))}
+
+              {nbAffiches < alertesFiltrees.length && (
+                <button
+                  className="charger-plus-btn"
+                  onClick={() => setNbAffiches(n => n + PAGE_SIZE)}
+                >
+                  Charger plus ({alertesFiltrees.length - nbAffiches} restant
+                  {alertesFiltrees.length - nbAffiches > 1 ? 's' : ''})
+                </button>
+              )}
+            </>
           )}
         </div>
 
         <AbonnementAlertes />
       </div>
     </div>
-  );
+  )
 }
 
-export default Accueil;
+export default Accueil

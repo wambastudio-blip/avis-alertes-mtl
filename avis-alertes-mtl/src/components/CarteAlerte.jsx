@@ -1,8 +1,7 @@
-import { useNavigate } from "react-router-dom";
-import "../index.css";
+import { useNavigate } from 'react-router-dom'
 
 function CarteAlerte({ alerte }) {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   return (
     <div
@@ -15,8 +14,7 @@ function CarteAlerte({ alerte }) {
         📅 {alerte.dateEmission} &nbsp; 🕐 {alerte.heure}
       </p>
     </div>
-  );
+  )
 }
 
-export default CarteAlerte;
-
+export default CarteAlerte

@@ -1,7 +1,7 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Header from "./components/Header";
-import Accueil from "./pages/Accueil";
-import Detail from "./pages/Detail";
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Header from './components/Header'
+import Accueil from './pages/Accueil'
+import Detail from './pages/Detail'
 
 function App() {
   return (
@@ -12,7 +12,7 @@ function App() {
         <Route path="/alertes/:id" element={<Detail />} />
       </Routes>
     </BrowserRouter>
-  );
+  )
 }
 
-export default App;
+export default App
